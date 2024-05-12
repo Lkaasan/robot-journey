@@ -17,7 +17,7 @@ def convert_sequence(sequence):
     for segment in segments:
         x, y = segment.split(";")
         locations_queue.append((int(x), int(y)))
-    locations_queue.append(0, 0)
+    locations_queue.append((0, 0))
     return locations_queue
 
 def get_distance(location1, location2):
@@ -31,10 +31,6 @@ print (fuel_per_move)
 locations_queue = convert_sequence(sequence)
 
 while locations_queue:
-    if fuel_empty == True or destination > 20:
-        break
-    
-    print(locations_queue)
     location = locations_queue[0]
     
     if (x, y) == (0, 0) and get_distance((0, 0), location) > fuel / 2:
