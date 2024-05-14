@@ -26,7 +26,6 @@ dropped_samples = {}
 print("sequence:", sequence)
 
 #Queue to store the sequence dynamically
-locations_queue = convert_sequence(sequence)
 
 #Function that converts the user input sequence to a queue of (x, y) coordinates
 #@Param sequence as a string
@@ -51,55 +50,60 @@ def get_fuel_consumption(weight):
 #@Param location1 as (x, y) coordinate
 #@param location2 as (x, y) coordinate
 #Return the fuel consumption to go from loca tion1 to location2 as decimal 
-def get_distance(location1, location2, weight):
+def get__fuel_distance(location1, location2, weight):
     return (abs((location1[0] - location2[0])) + abs(location1[1] - location2[1])) * get_fuel_consumption(weight)
 
+def distance_front_base(location):
+    return (abs((location[0] - 0)) + abs(location[1] - 0))
+
+locations_queue = convert_sequence(sequence)
 
 #Loop until location queue is empty
 while locations_queue:
     
     #Peek at next location in the queue
+    if (fuel_empty == True):
+        break
     location = locations_queue[0]
     
     #Printing fuel consumption per move
     print("Fuel Consumption per Move: ", get_fuel_consumption(weight))
     
     #Check if location is not possible to reach
-    if (x, y) == (0, 0) and get_distance((0, 0), location, weight) > fuel / 2:
+    if (x, y) == (0, 0) and get__fuel_distance((0, 0), location, weight) > fuel / 2:
         
         #Skip this location
         print("Cant get to destination ", location, " as its too far away!")
         locations_queue.pop(0)
         continue
-    
+    #Checks if next location is a dropped sample, to get weight of robot
+    if location in dropped_samples:
+        addedweight = dropped_samples.get(location)
+    else:
+        addedweight = 10
+            
     #Check if robot can't pick up next sample and still make it back to homebase
-    if get_distance((x, y), location, weight) + get_distance(location, (0, 0), weight + 10) > fuel:
-        
-        #Checks if next location is a dropped sample, to get weight of robot
-        if location in dropped_samples:
-            addedweight = dropped_samples.get(location)
-        else:
-            addedweight = 5
+    if get__fuel_distance((x, y), location, weight) + get__fuel_distance(location, (0, 0), weight + addedweight) > fuel:
         
         #Checks if robot should drop its samples and continue to the next location
-        if get_distance((x, y), location, addedweight) + get_distance(location, (0, 0), addedweight + 10) <= fuel:
-            
-            #Dropping Samples
-            print("Dropping Samples")
-            next_location = locations_queue.pop(0)
-            locations_queue.insert(-1, (x, y))
-            dropped_samples[(x, y)] = weight - 5
-            weight = 5 
-        else:
+        # if (get__fuel_distance((x, y), location, 5) + get__fuel_distance(location, (0, 0), weight + addedweight) <= fuel) and distance_front_base((x, y)) < 30:
+        #     #Dropping Samples
+        #     print("Dropping Samples")
+        #     next_location = locations_queue.pop(0)
+        #     locations_queue.insert(-1, (x, y))
+        #     dropped_samples[(x, y)] = weight - 5
+        #     print("Dropped locations: ", dropped_samples)
+        #     weight = 5 
+        # else:
             #Go back to homebase
-            next_location = (0, 0)
+        next_location = (0, 0)
     else:
         
         #pop next location from queue
         next_location = locations_queue.pop(0)
         
     arrived = False
-    
+    fuel_used = get_fuel_consumption(weight)
     #Loop to move to next location
     while not arrived:
         
@@ -145,8 +149,7 @@ while locations_queue:
                 elif y > next_location[1]:
                     y -= 1
                     
-            #Editing fuel variables
-            fuel_used = get_fuel_consumption(weight)     
+            #Editing fuel variables     
             fuel -= fuel_used
             fuel_consumed += fuel_used
             print(f"> {x};{y}")
