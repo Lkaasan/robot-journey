@@ -53,7 +53,7 @@ def get_fuel_consumption(weight):
 def get__fuel_distance(location1, location2, weight):
     return (abs((location1[0] - location2[0])) + abs(location1[1] - location2[1])) * get_fuel_consumption(weight)
 
-def distance_front_base(location):
+def distance_from_base(location):
     return (abs((location[0] - 0)) + abs(location[1] - 0))
 
 locations_queue = convert_sequence(sequence)
@@ -86,7 +86,7 @@ while locations_queue:
     if get__fuel_distance((x, y), location, weight) + get__fuel_distance(location, (0, 0), weight + addedweight) > fuel:
         
         #Checks if robot should drop its samples and continue to the next location
-        if (get__fuel_distance((x, y), location, 5) + get__fuel_distance(location, (0, 0), weight + addedweight) <= fuel) and distance_front_base((x, y)) < 30:
+        if (get__fuel_distance((x, y), location, 5) + get__fuel_distance(location, (0, 0), weight + addedweight) <= fuel) and distance_from_base((x, y)) < 30:
             #Dropping Samples
             print("Dropping Samples")
             next_location = locations_queue.pop(0)
@@ -131,7 +131,6 @@ while locations_queue:
             #Change boolean to end loop
             arrived = True
         else:
-            
             #Checks if fuel has ran out, ends both loops
             if fuel <= 0:
                 print("Ran out of fuel!")
